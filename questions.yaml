@@ -1,0 +1,157 @@
+categories:
+- rabbitmq
+- messagequeue
+questions:
+- variable: image.debug
+  type: boolean
+  label: Debug Logging 
+  description: Set to true if you would like to see extra information on logs
+  default: false
+  group: Configuration
+- variable: defaultImage
+  default: "true"
+  description: "Use default Docker images"
+  label: Use Default Images
+  type: boolean
+  show_subquestion_if: false
+  group: "Container Images"
+  subquestions:
+  - variable: image.registry
+    default: "docker.io"
+    description: "RabbitMQ Registry"
+    type: string
+    label: RabbitMQ Docker Image Registry Name
+  - variable: image.repository
+    default: "bitnami/rabbitmq"
+    description: "RabbitMQ image name"
+    type: string
+    label: RabbitMQ Image Name
+  - variable: image.tag
+    default: "3.7.17-debian-9-r0"
+    description: "RabbitMQ image tag"
+    type: string
+    label: Image Tag
+- variable: rabbitmq.existingPasswordSecretEnabled
+  label: Store the password in a secret
+  description: Use a secret to hold the RabbitMQ password
+  type: boolean
+  default: false
+  group: Credentials
+- variable: rabbitmq.existingPasswordSecret
+  label: Password Secret Name
+  description: Name of the secret holding the key name 'rabbitmq-password'
+  type: string
+  show_if: "rabbitmq.existingPasswordSecretEnabled=true"
+  group: Credentials
+- variable: rabbitmq.username
+  type: string
+  description: RabbitMQ Username
+  group: Credentials
+  default: admin
+- variable: rabbitmq.password
+  type: password
+  description: RabbitMQ user password
+  group: Credentials
+  show_if: "rabbitmq.existingPasswordSecretEnabled=false"
+- variable: rabbitmq.existingErlangSecretEnabled
+  description: Name of the secret holding the key name 'rabbitmq-erlang-cookie', otherwise the cookie will be randomly generated
+  type: boolean
+  group: Credentials
+- variable: rabbitmq.existingErlangSecret
+  label: RabbitMQ erlang Cookie Secret
+  type: string
+  description: Name of the secret holding the key name 'rabbitmq-erlang-cookie'
+  group: Credentials
+  show_if: "rabbitmq.existingErlangSecretEnabled=true"
+- variable: persistence.existingClaimEnable
+  type: boolean
+  label: Use an existing PVC
+  default: "false"
+  description: Use a manually managed PVC, set to false to let this deployment create and manage the PVC
+  group: Storage
+- variable: persistence.existingClaim
+  type: string
+  label: Existing Claim Name
+  description: Name of the exisiting PVC, leave blank to use managed claim
+  show_if: persistence.existingClaim.enable=true
+  group: Storage
+- variable: persistence.storageClass
+  type: storageclass
+  label: Storage Class
+  description: storage Class of the managed PVC
+  default: aws-efs
+  show_if: persistence.existingClaim.enable=false
+  group: Storage
+- variable: persistence.size
+  type: string
+  label: Storage Size
+  description: Size of the managed PVC, e.g. 8Gi or 8Mi
+  default: 8Gi
+  show_if: persistence.existingClaim.enable=false
+  group: Storage
+- variable: persistence.mountPath
+  type: string
+  label: Mount Path
+  description: The path the volume will be mounted at
+  default: /opt/bitnami/rabbitmq/var/lib/rabbitmq
+  group: Storage
+- variable: resources.requests.memory
+  type: string
+  label: Request Memory
+  description: Amount of memory requested
+  default: 256Mi
+  group: Resources
+- variable: resources.requests.cpu
+  type: string
+  label: Request CPU
+  description: Amount of cpu requested
+  default: 250m
+  group: Resources
+- variable: resources.limits.memory
+  type: string
+  label: Limit Memory
+  description: Max amount of memory (this will affect scheduling)
+  default: 1Gi
+  group: Resources
+- variable: resources.limits.cpu
+  type: string
+  label: Limit CPU
+  description: Max amount of cpu (this will affect scheduling)
+  default: 1000m
+  group: Resources
+- variable: rabbitmqManagerUI.ambassador.enabled
+  default: false
+  description: "Expose RabbitMQ Manager UI using Ambassador"
+  type: boolean
+  label: Expose RabbitMQ Manager UI using Ambassador
+  show_subquestion_if: true
+  group: "RabbitMQ Manager UI"
+  subquestions:
+  - variable: rabbitmqManagerUI.ambassador.service.hostname
+    default: ""
+    description: "Hostname"
+    type: string
+    show_if: "rabbitmqManagerUI.ambassador.enabled=true"
+    required: true
+    label: Ambassador Hostname
+  - variable: rabbitmqManagerUI.ambassador.service.urlPrefix
+    default: "/"
+    description: "UrlPrefix"
+    type: string
+    show_if: "rabbitmqManagerUI.ambassador.enabled=true"
+    required: true
+    label: Ambassador UrlPrefix
+  - variable: rabbitmqManagerUI.ambassador.service.rewrite
+    default: "/"
+    description: "Ambassador Rewrite Rule"
+    type: string
+    show_if: "rabbitmqManagerUI.ambassador.enabled=true"
+    required: true
+    label: Ambassador Rewrite Rule
+  - variable: rabbitmqManagerUI.ambassador.service.internalId
+    default: "ambassador-internal"
+    description: "Ambassador ID"
+    type: string
+    show_if: "rabbitmqManagerUI.ambassador.enabled=true"
+    required: true
+    label: Ambassador ID
